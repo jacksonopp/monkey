@@ -44,6 +44,14 @@ let add = fn(x, y) {
 }
 
 let result = add(five, ten);
+
+-!*/<>
+
+true false if else return
+
+10 == 10;
+
+10 != 9;
 `
 
 		tests := []testToken{
@@ -84,6 +92,29 @@ let result = add(five, ten);
 			{token.COMMA, ","},
 			{token.IDENT, "ten"},
 			{token.RPAREN, ")"},
+			{token.SEMICOLON, ";"},
+
+			{token.MINUS, "-"},
+			{token.BANG, "!"},
+			{token.ASTERISK, "*"},
+			{token.SLASH, "/"},
+			{token.LT, "<"},
+			{token.GT, ">"},
+
+			{token.TRUE, "true"},
+			{token.FALSE, "false"},
+			{token.IF, "if"},
+			{token.ELSE, "else"},
+			{token.RETURN, "return"},
+
+			{token.INT, "10"},
+			{token.EQ, "=="},
+			{token.INT, "10"},
+			{token.SEMICOLON, ";"},
+
+			{token.INT, "10"},
+			{token.NEQ, "!="},
+			{token.INT, "9"},
 			{token.SEMICOLON, ";"},
 		}
 
