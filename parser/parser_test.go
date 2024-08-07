@@ -306,10 +306,36 @@ func TestExpressions(t *testing.T) {
 				"comp before false",
 				"3 > 5 == false",
 				"((3 > 5) == false)",
-			}, {
+			},
+			{
 				"comp before true",
 				"3 < 5 == true",
 				"((3 < 5) == true)",
+			},
+			{
+				"grouping addition",
+				"1 + (2 + 3) + 4",
+				"((1 + (2 + 3)) + 4)",
+			},
+			{
+				"grouping mult",
+				"(5 + 5) * 2",
+				"((5 + 5) * 2)",
+			},
+			{
+				"grouping div",
+				"2 / (5 + 5)",
+				"(2 / (5 + 5))",
+			},
+			{
+				"grouping with prefix",
+				"-(5 + 5)",
+				"(-(5 + 5))",
+			},
+			{
+				"grouping bools",
+				"!(true == true)",
+				"(!(true == true))",
 			},
 		}
 
