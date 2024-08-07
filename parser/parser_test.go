@@ -353,6 +353,75 @@ func TestExpressions(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("if expressions", func(t *testing.T) {
+		input := "if (x < y) { x }"
+
+		l := lexer.New(input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		checkProgramStatementsLength(t, program.Statements, 1)
+		stmt := checkStatementIsExpressionStatement(t, program.Statements[0])
+
+		exp, ok := stmt.Expression.(*ast.IfExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression not ast.IfExpression. got=%T", stmt.Expression)
+		}
+
+		if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+			return
+		}
+
+		checkProgramStatementsLength(t, exp.Consequence.Statements, 1)
+
+		consequence := checkStatementIsExpressionStatement(t, exp.Consequence.Statements[0])
+		if !testIdentifier(t, consequence.Expression, "x") {
+			return
+		}
+
+		if exp.Alternative != nil {
+			t.Errorf("exp.Alternative statement was not nil. got=%+v", exp.Alternative)
+		}
+	})
+
+	t.Run("if else expression", func(t *testing.T) {
+		input := "if (x < y) { x } else { y }"
+
+		l := lexer.New(input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		checkProgramStatementsLength(t, program.Statements, 1)
+		stmt := checkStatementIsExpressionStatement(t, program.Statements[0])
+
+		exp, ok := stmt.Expression.(*ast.IfExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression not ast.IfExpression. got=%T", stmt.Expression)
+		}
+
+		if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+			return
+		}
+
+		checkProgramStatementsLength(t, exp.Consequence.Statements, 1)
+
+		consequence := checkStatementIsExpressionStatement(t, exp.Consequence.Statements[0])
+		if !testIdentifier(t, consequence.Expression, "x") {
+			return
+		}
+
+		if exp.Alternative == nil {
+			t.Fatalf("exp.Alternative was nil")
+		}
+
+		alternative := checkStatementIsExpressionStatement(t, exp.Alternative.Statements[0])
+		if !testIdentifier(t, alternative.Expression, "y") {
+			return
+		}
+	})
 }
 
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
