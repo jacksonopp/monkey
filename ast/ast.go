@@ -3,6 +3,7 @@ package ast
 // Node is the root interface that all AST nodes implement
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 // Statement is a unit of execution
@@ -20,4 +21,8 @@ type Statement interface {
 type Expression interface {
 	Node
 	expressionNode()
+}
+
+type TypeChecker interface {
+	IsType() bool
 }

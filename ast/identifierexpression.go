@@ -7,5 +7,9 @@ type Identifier struct {
 	Value string      // The value
 }
 
+func (i *Identifier) String() string {
+	return i.Value
+}
+
 func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
