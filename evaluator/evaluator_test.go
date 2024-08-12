@@ -276,6 +276,41 @@ func TestStatements(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("let statement", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			input    string
+			expected int64
+		}{
+			{
+				"simple assignment",
+				"let a = 10; a;",
+				10,
+			},
+			{
+				"simple assignment with calculation",
+				"let a = 5 * 2; a;",
+				10,
+			},
+			{
+				"multiple assignments",
+				"let a = 10; let b = a; b;",
+				10,
+			},
+			{
+				"multiple assignments with calculations",
+				"let a = 5; let b = 3; let c = a * b - 5; c;",
+				10,
+			},
+		}
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				testIntegerObject(t, testEval(tt.input), tt.expected)
+			})
+		}
+	})
+
 }
 
 func TestErrorHandling(t *testing.T) {
@@ -322,6 +357,11 @@ func TestErrorHandling(t *testing.T) {
 				`,
 				"unknown operator: BOOLEAN + BOOLEAN",
 			},
+			{
+				"identifier not found",
+				"foobar",
+				"identifier not found: foobar",
+			},
 		}
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
@@ -343,8 +383,9 @@ func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
 	program := p.ParseProgram()
+	env := object.NewEnvironment()
 
-	return Eval(program)
+	return Eval(program, env)
 }
 
 func testNullObject(t *testing.T, obj object.Object) bool {
