@@ -278,6 +278,67 @@ func TestStatements(t *testing.T) {
 	})
 }
 
+func TestErrorHandling(t *testing.T) {
+	t.Run("error handling", func(t *testing.T) {
+		tests := []struct {
+			name            string
+			input           string
+			expectedMessage string
+		}{
+			{
+				"type mismatch",
+				"5 + true",
+				"type mismatch: INTEGER + BOOLEAN",
+			},
+			{
+				"adding int and bool",
+				"5 + true; 8;",
+				"type mismatch: INTEGER + BOOLEAN",
+			},
+			{
+				"negative true",
+				"-true",
+				"unknown operator: -BOOLEAN",
+			},
+			{
+				"adding bools",
+				"true + true",
+				"unknown operator: BOOLEAN + BOOLEAN",
+			},
+			{
+				"adding bools nested",
+				"if (20 > 1) { true + false }",
+				"unknown operator: BOOLEAN + BOOLEAN",
+			},
+			{
+				"adding bools deep nested",
+				`
+				if (10 > 1) {
+				  if (10 > 1) {
+					return true + false;
+				  }
+				return 1;
+				}
+				`,
+				"unknown operator: BOOLEAN + BOOLEAN",
+			},
+		}
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				evaluated := testEval(tt.input)
+
+				errObj, ok := evaluated.(*object.Error)
+				if !ok {
+					t.Errorf("no error object returned. got=%T(%+v)", evaluated, evaluated)
+				}
+				if errObj.Message != tt.expectedMessage {
+					t.Errorf("wrong error message. want=%q, got=%q", tt.expectedMessage, errObj.Message)
+				}
+			})
+		}
+	})
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
