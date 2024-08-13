@@ -279,6 +279,19 @@ func TestExpressions(t *testing.T) {
 				"fn(x){ x; }(5);",
 				5,
 			},
+			{
+				"closure",
+				`
+let newAdder = fn(x) {
+  fn(y) { x + y };
+};
+
+let addTwo = newAdder(2);
+
+addTwo(2);
+`,
+				4,
+			},
 		}
 
 		for _, tt := range tests {
